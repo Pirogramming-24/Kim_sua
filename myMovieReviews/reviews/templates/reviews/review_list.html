@@ -1,0 +1,27 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'reviews/style.css' %}">
+
+<div class="top-bar">
+    <h1>My Movie Reviews🎬</h1>
+    <a href="{% url 'review_create' %}" class="btn-create">리뷰 작성</a>
+</div>
+
+<hr class="separator">
+
+<div class="movie-cards-grid">
+    {% for review in reviews %}
+    <div class="movie-card">
+        <div class="movie-info">
+            <h3>{{ review.title }} ({{ review.year }})</h3>
+            <p><strong>장르:</strong> {{ review.genre }}</p>
+            <p><strong>별점:</strong> {{ review.rating|floatformat:1 }} / 5</p>
+            <p><strong>러닝타임:</strong> {{ review.runtime_display }}</p>
+        </div>
+        <div class="movie-actions">
+            <a href="{% url 'review_detail' review.pk %}" class="btn">자세히 보기</a>
+        </div>
+    </div>
+    {% empty %}
+    <p>작성된 리뷰가 없습니다.</p>
+    {% endfor %}
+</div>

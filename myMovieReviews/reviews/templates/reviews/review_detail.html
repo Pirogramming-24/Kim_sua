@@ -1,0 +1,23 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'reviews/style.css' %}">
+
+<div class="movie-detail-container">
+    <div class="movie-detail-card">
+        <div class="movie-info">
+            <h2>{{ review.title }} ({{ review.year }})</h2>
+            <p><strong>장르:</strong> {{ review.genre }}</p>
+            <p><strong>별점:</strong> {{ review.rating|floatformat:1 }} / 5</p>
+            <p><strong>러닝타임:</strong> {{ review.runtime_display }}</p>
+            <p><strong>감독:</strong> {{ review.director }}</p>
+            <p><strong>배우:</strong> {{ review.actors }}</p>
+        </div>
+        <div class="movie-review">
+            <p>{{ review.content }}</p>
+        </div>
+        <div class="form-buttons">
+            <a href="{% url 'review_list' %}" class="btn-list">목록</a>
+            <a href="{% url 'review_update' review.pk %}" class="btn-edit">수정</a>
+            <a href="{% url 'review_delete' review.pk %}" class="btn-delete">삭제</a>
+        </div>
+    </div>
+</div>
