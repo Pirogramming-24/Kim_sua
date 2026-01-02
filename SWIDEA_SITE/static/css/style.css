@@ -1,0 +1,196 @@
+/* =========================
+   공통 레이아웃
+========================= */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f1f5f9;
+    margin: 0;
+    padding: 0;
+    color: #1e293b;
+}
+
+a {
+    text-decoration: none !important;
+}
+
+/* =========================
+   네비게이션 바
+========================= */
+.navbar {
+    width: 100%;
+    background-color: #ffffff;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #0ea5e9;
+    letter-spacing: -1px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #475569;
+    transition: all 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: #0ea5e9;
+    transform: translateY(-2px);
+}
+
+/* =========================
+   4열 배치
+========================= */
+.container {
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.idea-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 30px;
+    width: 100%;
+}
+
+.idea-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.idea-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+}
+
+.idea-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.idea-card-body {
+    padding: 20px;
+    text-align: center;
+}
+
+/* =========================
+   폼 & 상세 페이지 카드 
+========================= */
+.page-card {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.form-group {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 25px auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #334155;
+    font-size: 0.95rem;
+}
+
+.form-group input, 
+.form-group textarea, 
+.form-group select {
+    padding: 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    background: #f8fafc;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    background: #fff;
+}
+
+/* =========================
+   버튼 시스템 (크기 완벽 통일)
+========================= */
+.button-container, .btn-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* 버튼 사이 간격 */
+    margin-top: 30px;
+    width: 100%;
+}
+
+.btn {
+    /* 너비와 높이를 고정하여 크기를 완전히 통일함 */
+    width: 150px; 
+    height: 50px;
+    
+    /* 내부 텍스트 중앙 정렬 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+    color: white !important;
+    padding: 0; 
+    box-sizing: border-box;
+}
+
+/* 개별 버튼 색상 */
+.btn-dark, .btn-primary, .btn-sky { background-color: #0ea5e9; } 
+.btn-secondary, .btn-gray { background-color: #64748b; } 
+.btn-danger, .btn-red { background-color: #ef4444; }
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+/* 상세페이지의 삭제 폼도 버튼 크기에 영향을 주지 않도록 설정 */
+.button-container form {
+    margin: 0;
+    display: flex;
+}

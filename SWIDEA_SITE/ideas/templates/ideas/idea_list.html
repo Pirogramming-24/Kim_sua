@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-card">
+    <div class="center-content">
+        <h2 class="center-title">Idea List</h2>
+        <p class="sub-title">나의 아이디어를 잊지 말고 기록해보세요</p>
+    </div>
+
+    <div style="display:flex; justify-content: flex-end; margin-bottom:20px;">
+        <form method="GET">
+            <select name="sort" onchange="this.form.submit()" style="padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <option value="latest" {% if sort == 'latest' %}selected{% endif %}>최신순</option>
+                <option value="registration" {% if sort == 'registration' %}selected{% endif %}>등록순</option>
+                <option value="name" {% if sort == 'name' %}selected{% endif %}>이름순</option>
+                <option value="star" {% if sort == 'star' %}selected{% endif %}>찜하기순</option>
+            </select>
+        </form>
+    </div>
+
+    <div class="idea-grid">
+        {% for idea in ideas %}
+        <div class="idea-card">
+            <div style="position:relative;">
+                {% if idea.image %}
+                    <img src="{{ idea.image.url }}" style="width:100%; height:180px; object-fit:cover;">
+                {% else %}
+                    <div style="width:100%; height:180px; background:#f1f5f9;"></div>
+                {% endif %}
+                <span id="star-{{ idea.id }}" onclick="toggleStar('{{ idea.id }}')" 
+                      class="star-icon {% if idea.ideastar.is_starred %}active{% endif %}"
+                      style="position:absolute; top:10px; right:10px; cursor:pointer; font-size:1.5rem; color: white; text-shadow:0 0 5px rgba(0,0,0,0.5);">★</span>
+            </div>
+            <div style="padding:15px;">
+                <h4 style="margin:0 0 10px 0;"><a href="{% url 'ideas:idea_detail' idea.id %}" style="text-decoration:none; color:#1e293b;">{{ idea.title }}</a></h4>
+                <p style="font-size:0.9rem;">개발툴: {{ idea.devtool.name }}</p>
+                <p style="font-size:0.9rem;">관심도: 
+                    <button type="button" onclick="changeInterest('{{ idea.id }}', 'minus')">-</button>
+                    <span id="interest-{{ idea.id }}">{{ idea.interest }}</span>
+                    <button type="button" onclick="changeInterest('{{ idea.id }}', 'plus')">+</button>
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+// 관심
+function toggleStar(pk) {
+    fetch(`/${pk}/star/`).then(res => res.json()).then(data => {
+        const icon = document.getElementById("star-" + pk);
+        data.is_starred ? icon.classList.add("active") : icon.classList.remove("active");
+    });
+}
+function changeInterest(pk, action) {
+    fetch(`/${pk}/interest/?action=${action}`).then(res => res.json()).then(data => {
+        document.getElementById("interest-" + pk).innerText = data.interest;
+    });
+}
+</script>
+<style>.star-icon.active { color: #f1c40f !important; }</style>
+{% endblock %}

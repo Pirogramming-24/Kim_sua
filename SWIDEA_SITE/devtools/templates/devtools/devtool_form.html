@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-card">
+    <div class="center-content">
+        <h2 class="center-title">
+            {% if devtool %}DevTool Detail Update{% else %}DevTool Register{% endif %}
+        </h2>
+        <p class="sub-title">
+            {% if devtool %}개발툴 세부내용 수정 페이지입니다.{% else %}개발툴 등록 페이지입니다.{% endif %}
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>이름:</label>
+                <input type="text" name="name" value="{{ devtool.name|default:'' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>종류:</label>
+                <input type="text" name="kind" value="{{ devtool.kind|default:'' }}" placeholder="예: 언어, 프레임워크" required>
+            </div>
+
+            <div class="form-group">
+                <label>개발툴 설명:</label>
+                <textarea name="content" rows="5" required>{{ devtool.content|default:'' }}</textarea>
+            </div>
+
+            <div class="button-container" style="margin-top: 20px;">
+                <button type="submit" class="btn btn-dark" 
+                        style="background-color: #0ea5e9; border: none; padding: 8px 20px;">
+                    저장
+                </button>
+
+                {% if devtool %}
+                    <a href="{% url 'devtools:devtool_detail' devtool.id %}" class="btn btn-secondary" 
+                       style="background-color: #6c757d; border: none; padding: 8px 20px; text-decoration: none; color: white;">
+                       취소
+                    </a>
+                {% else %}
+                    <a href="{% url 'devtools:devtool_list' %}" class="btn btn-secondary" 
+                       style="background-color: #6c757d; border: none; padding: 8px 20px; text-decoration: none; color: white;">
+                       취소
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

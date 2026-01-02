@@ -1,0 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SW Idea Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=1.1">
+</head>
+<body>
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="{% url 'ideas:idea_list' %}" class="nav-brand">💡 Idea Manager</a>
+            <nav class="nav-links">
+                <a href="{% url 'ideas:idea_create' %}">아이디어 등록</a>
+                <a href="{% url 'ideas:idea_list' %}">아이디어 관리</a>
+                <a href="{% url 'devtools:devtool_create' %}">개발툴 등록</a>
+                <a href="{% url 'devtools:devtool_list' %}">개발툴 관리</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-card">
+    <div class="center-content">
+        <h2 class="center-title">DevTool List</h2>
+        <p class="sub-title">현재 등록된 개발 도구 리스트입니다.</p>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+            <tr style="border-bottom: 1px solid #334155; text-align: left;">
+                <th style="padding: 15px;">이름</th>
+                <th style="padding: 15px;">종류</th>
+                <th style="padding: 15px;">설명</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tool in tools %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 15px;"><a href="{% url 'devtools:devtool_detail' tool.id %}" style="font-weight: bold; color: #2563eb; text-decoration: none;">{{ tool.name }}</a></td>
+                <td style="padding: 15px;">{{ tool.kind }}</td>
+                <td style="padding: 15px; color: #64748b;">{{ tool.content|truncatechars:50 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+</div>
+{% endblock %}
