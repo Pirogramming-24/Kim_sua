@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-card">
+    <div class="center-content">
+        <h2 class="center-title">
+            {% if idea %}Idea Update{% else %}Idea Register{% endif %}
+        </h2>
+        <p class="sub-title">
+            {% if idea %}아이디어 세부 내용 수정 페이지입니다.{% else %}새로운 아이디어를 등록해 보세요.{% endif %}
+        </p>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>아이디어명:</label>
+                <input type="text" name="title" value="{{ idea.title|default:'' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>이미지:</label>
+                <input type="file" name="image">
+                {% if idea.image %}
+                    <small style="color: #94a3b8; display: block;">현재 파일: {{ idea.image.name }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>아이디어 설명:</label>
+                <textarea name="content" rows="5" required>{{ idea.content|default:'' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>아이디어 관심도:</label>
+                <input type="number" name="interest" value="{{ idea.interest|default:0 }}">
+            </div>
+
+            <div class="form-group">
+                <label>핵심 개발툴:</label>
+                <select name="devtool" required>
+                    <option value="">-------</option>
+                    {% for tool in devtools %}
+                        <option value="{{ tool.id }}" 
+                            {% if idea.devtool.id == tool.id %}selected{% endif %}>
+                            {{ tool.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="button-container">
+                <button type="submit" class="btn btn-dark" 
+                        style="background-color: #0ea5e9; border: none; padding: 8px 20px;">
+                    저장
+                </button>
+
+                {% if idea %}
+                    <a href="{% url 'ideas:idea_detail' idea.id %}" class="btn btn-secondary" 
+                       style="background-color: #6c757d; border: none; padding: 8px 20px; text-decoration: none; color: white;">
+                       취소
+                    </a>
+                {% else %}
+                    <a href="{% url 'ideas:idea_list' %}" class="btn btn-secondary" 
+                       style="background-color: #6c757d; border: none; padding: 8px 20px; text-decoration: none; color: white;">
+                       취소
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
