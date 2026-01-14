@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 650px;">
+    {# 수정 로직을 위해 action 주소만 update로 연결합니다 #}
+    <form id="post-form" action="{% url 'posts:update' post.pk %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {# 1. 기본 정보 (create.html과 동일한 폼 필드 구성) #}
+        <p>{{ form.title.label_tag }} {{ form.title }}</p>
+        <p>{{ form.content.label_tag }} {{ form.content }}</p>
+        <p>{{ form.region.label_tag }} {{ form.region }}</p>
+        <p>{{ form.user.label_tag }} {{ form.user }}</p>
+        <p>{{ form.price.label_tag }} {{ form.price }}</p>
+
+        {# 2. 대표 사진 #}
+        <p>{{ form.photo.label_tag }} {{ form.photo }}</p>
+
+        {# 3. 영양성분 이미지 업로드 #}
+        <p>{{ form.nutrition_image.label_tag }} {{ form.nutrition_image }}</p>
+
+        {# 4. 영양 정보 필드 (아이디 값 매칭을 위해 create와 동일하게 유지) #}
+        <div id="nutrition-fields">
+            <p>{{ form.calories.label_tag }} {{ form.calories }}</p>
+            <p>{{ form.carbs.label_tag }} {{ form.carbs }}</p>
+            <p>{{ form.protein.label_tag }} {{ form.protein }}</p>
+            <p>{{ form.fat.label_tag }} {{ form.fat }}</p>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100 py-2 mt-3">저장하기</button>
+    </form>
+</div>
+
+<script>
+    const nutritionInput = document.getElementById('id_nutrition_image');
+    const fields = {
+        calories: document.getElementById('id_calories'),
+        carbs: document.getElementById('id_carbs'),
+        protein: document.getElementById('id_protein'),
+        fat: document.getElementById('id_fat')
+    };
+
+    if (nutritionInput) {
+        nutritionInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // 분석 중... 상태 표시 (입력창을 잠시 텍스트로 변경)
+            Object.values(fields).forEach(field => {
+                if (field) {
+                    field.dataset.oldType = field.type;
+                    field.type = 'text'; 
+                    field.value = '분석 중...';
+                    field.disabled = true;
+                }
+            });
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            try {
+                const response = await fetch("{% url 'posts:analyze_ocr' %}", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // 데이터 채우기
+                    fields.calories.value = data.calories || 0;
+                    fields.carbs.value = data.carbs || 0;
+                    fields.protein.value = data.protein || 0;
+                    fields.fat.value = data.fat || 0;
+                } else {
+                    alert("분석에 실패했습니다.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("서버 연결 오류가 발생했습니다.");
+            } finally {
+                // 원상 복구
+                Object.values(fields).forEach(field => {
+                    if (field) {
+                        field.type = field.dataset.oldType || 'number';
+                        field.disabled = false;
+                    }
+                });
+            }
+        });
+    }
+</script>
+{% endblock %}
