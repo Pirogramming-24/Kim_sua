@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 영화 챗봇</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .chat-container { max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; height: 80vh; }
+        .chat-header { background: #7a52ff; color: white; padding: 20px; text-align: center; font-size: 1.2em; font-weight: bold; }
+        #chat-log { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { padding: 10px 15px; border-radius: 15px; max-width: 80%; line-height: 1.4; }
+        .user-msg { align-self: flex-end; background: #ffa2d0; color: white; }
+        .bot-msg { align-self: flex-start; background: #eee; color: #333; }
+        .chat-input-area { display: flex; padding: 20px; border-top: 1px solid #eee; }
+        #chat-input { flex-grow: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; outline: none; }
+        #send-btn { background: #7a52ff; color: white; border: none; padding: 10px 20px; margin-left: 10px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-header">🎬 Movie AI 추천 챗봇</div>
+    <div id="chat-log">
+        <div class="message bot-msg">안녕하세요! 어떤 영화를 추천해드릴까요?</div>
+    </div>
+    <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="메시지를 입력하세요...">
+        <button id="send-btn">전송</button>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function addMessage(msg, isUser) {
+        const cls = isUser ? 'user-msg' : 'bot-msg';
+        $('#chat-log').append(`<div class="message ${cls}">${msg}</div>`);
+        $('#chat-log').scrollTop($('#chat-log')[0].scrollHeight);
+    }
+
+    $('#send-btn').click(function() {
+        const message = $('#chat-input').val();
+        if (!message) return;
+
+        addMessage(message, true);
+        $('#chat-input').val('');
+
+        $.ajax({
+            url: "{% url 'chatbot' %}",
+            method: "POST",
+            data: {
+                'message': message,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(data) {
+                if(data.status === 'success') {
+                    addMessage(data.reply, false);
+                } else {
+                    addMessage("오류가 발생했습니다: " + data.message, false);
+                }
+            }
+        });
+    });
+
+    $('#chat-input').keypress(function(e) {
+        if(e.which == 13) $('#send-btn').click();
+    });
+</script>
+
+</body>
+</html>
