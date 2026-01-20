@@ -1,0 +1,150 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'reviews/style.css' %}">
+
+<div class="top-bar">
+    <h1>My Movie Reviews🎬</h1>
+    <div class="top-bar-buttons" style="display: flex; gap: 10px;">
+        <a href="{% url 'chatbot' %}" class="btn-chatbot" style="background-color: #7a52ff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; ">AI 챗봇 추천</a>
+        <a href="{% url 'review_create' %}" class="btn-create">리뷰 작성</a>
+    </div>
+</div>
+
+<div class="stats-container" style="display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #eee;">
+    <div class="stat-item" style="text-align: center; flex: 1;">
+        <span style="display: block; font-size: 0.9em; color: #666;">총 영화</span>
+        <strong style="font-size: 1.5em; color: #333;">{{ total_count }}</strong>
+    </div>
+    <div class="stat-item" style="text-align: center; flex: 1; border-left: 1px solid #ddd; border-right: 1px solid #ddd;">
+        <span style="display: block; font-size: 0.9em; color: #666;">TMDB 추천 영화</span>
+        <strong style="font-size: 1.5em; color: #81c0ff;">{{ tmdb_count }}</strong>
+    </div>
+    <div class="stat-item" style="text-align: center; flex: 1;">
+        <span style="display: block; font-size: 0.9em; color: #666;">직접 쓴 리뷰</span>
+        <strong style="font-size: 1.5em; color: #ffa2d0;">{{ my_count }}</strong>
+    </div>
+</div>
+
+<div class="search-container" style="background:#f4f4f4; padding:20px; border-radius:10px; margin-bottom:20px;">
+    <form method="get" action="{% url 'review_list' %}">
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <select name="search_type" style="padding:10px; border-radius: 5px; border: 1px solid #ccc;">
+                <option value="title" {% if search_type == 'title' %}selected{% endif %}>제목</option>
+                <option value="director" {% if search_type == 'director' %}selected{% endif %}>감독</option>
+                <option value="actors" {% if search_type == 'actors' %}selected{% endif %}>배우</option>
+            </select>
+            
+            <input type="text" name="q" value="{{ query }}" placeholder="검색창에 입력하세요." style="flex:1; padding:10px; border-radius: 5px; border: 1px solid #ccc;">
+            <button type="submit" class="btn-create">검색</button>
+            <a href="{% url 'review_list' %}" style="text-decoration: none; padding: 10px; color: #666; font-size: 0.9em;">초기화</a>
+        </div>
+
+        <div style="display:flex; justify-content: space-between; font-size: 0.9em; align-items: center;">
+            <div class="filters">
+                <strong>필터:</strong>
+                <label style="margin-right: 10px; cursor: pointer;">
+                    <input type="radio" name="filter" value="all" {% if filter_type == 'all' or not filter_type %}checked{% endif %} onchange="this.form.submit()"> 전체
+                </label>
+                <label style="margin-right: 10px; cursor: pointer;">
+                    <input type="radio" name="filter" value="tmdb" {% if filter_type == 'tmdb' %}checked{% endif %} onchange="this.form.submit()"> TMDB
+                </label>
+                <label style="cursor: pointer;">
+                    <input type="radio" name="filter" value="my" {% if filter_type == 'my' %}checked{% endif %} onchange="this.form.submit()"> 내 리뷰
+                </label>
+            </div>
+            <div class="sorting">
+                <strong>정렬:</strong>
+                <select name="sort" onchange="this.form.submit()" style="padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
+                    <option value="latest" {% if sort_type == 'latest' %}selected{% endif %}>최신순</option>
+                    <option value="title" {% if sort_type == 'title' %}selected{% endif %}>제목순</option>
+                    <option value="rating" {% if sort_type == 'rating' %}selected{% endif %}>평점순</option>
+                    <option value="year" {% if sort_type == 'year' %}selected{% endif %}>최신년도순</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+
+<hr class="separator">
+
+<div class="movie-cards-grid">
+    {% for item in reviews %}
+        {% if item.type == 'my' %}
+            {# --- 1. 내 리뷰 디자인 (핑크색) --- #}
+            <div class="movie-card" style="border-top: 4px solid #ffa2d0; overflow: hidden; display: flex; flex-direction: column; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <div class="movie-poster" style="width: 100%; height: 250px; background: #f0f0f0;">
+                    {% if item.poster_url %}
+                        <img src="{{ item.poster_url }}" alt="{{ item.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #ccc;">포스터 없음</div>
+                    {% endif %}
+                </div>
+
+                <div class="movie-info" style="padding: 15px; flex-grow: 1; font-size: 0.9em; color: #555;">
+                    <small style="color: #ffa2d0; font-weight: bold;">내 리뷰</small>
+                    <h3 style="margin: 8px 0; color: #333;">{{ item.title }} ({{ item.year }})</h3>
+                    <p style="margin: 4px 0;"><strong>장르:</strong> {{ item.genre }}</p>
+                    <p style="margin: 4px 0;"><strong>별점:</strong> <span style="color: #ffa2d0; font-weight: bold;">{{ item.rating|floatformat:1 }}</span> / 5</p>
+                    <p class="text-clamp" style="margin: 4px 0;">
+                    <strong>감독:</strong> {{ item.director|default:"정보 없음" }}</p>
+                    <p class="text-clamp" style="margin: 4px 0;">
+                        <strong>배우:</strong> {{ item.actors|default:"정보 없음" }}
+                    </p>
+                </div>
+
+                <div class="movie-actions" style="padding: 15px; border-top: 1px solid #eee;">
+                    <a href="{% url 'review_detail' item.pk %}" class="btn" style="display: block; text-align: center; background-color: #ffa2d0; color: white; text-decoration: none; border-radius: 5px; padding: 8px 0; font-weight: bold;">리뷰 상세보기</a>
+                </div>
+            </div>
+
+        {% else %}
+            {# --- 2. TMDB 추천 디자인 (블루색) --- #}
+            <div class="movie-card" style="border-top: 4px solid #81c0ff; overflow: hidden; display: flex; flex-direction: column; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <div class="movie-poster" style="width: 100%; height: 250px; background: #f0f0f0;">
+                    {% if item.poster_url %}
+                        <img src="{{ item.poster_url }}" alt="{{ item.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #ccc;">포스터 없음</div>
+                    {% endif %}
+                </div>
+
+                <div class="movie-info" style="padding: 15px; flex-grow: 1; font-size: 0.9em; color: #555;">
+                    <small style="color: #81c0ff; font-weight: bold;">TMDB 추천</small>
+                    <h3 style="margin: 8px 0; color: #333;">{{ item.title }} ({{ item.year }})</h3>
+                    <p style="margin: 4px 0;"><strong>장르:</strong> {{ item.genre }}</p>
+                    <p style="margin: 4px 0;"><strong>별점:</strong> <span style="color: #81c0ff; font-weight: bold;">{{ item.rating|floatformat:1 }}</span> / 5</p>
+                    <p class="text-clamp" style="margin: 4px 0;">
+                    <strong>감독:</strong> {{ item.director|default:"정보 없음" }}</p>
+                    <p class="text-clamp" style="margin: 4px 0;">
+                        <strong>배우:</strong> {{ item.actors|default:"정보 없음" }}
+                    </p>
+                </div>
+
+                <div class="movie-actions" style="padding: 15px; border-top: 1px solid #eee;">
+                    <a href="https://www.themoviedb.org/movie/{{ item.pk }}" target="_blank" class="btn" style="display: block; text-align: center; background-color: #81c0ff; color: white; text-decoration: none; border-radius: 5px; padding: 8px 0; font-weight: bold;">TMDB 상세보기</a>
+                </div>
+            </div>
+        {% endif %}
+    {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 50px;">
+            <p style="color: #888; font-size: 1.2em;">등록된 영화가 없거나 검색 결과가 없습니다.</p>
+        </div>
+    {% endfor %}
+</div>
+
+</div> 
+
+<div class="pagination">
+    {% if reviews.has_previous %}
+        <a href="?page=1&q={{ query }}&search_type={{ search_type }}&filter={{ filter_type }}&sort={{ sort_type }}" class="btn-page">«</a>
+        <a href="?page={{ reviews.previous_page_number }}&q={{ query }}&search_type={{ search_type }}&filter={{ filter_type }}&sort={{ sort_type }}" class="btn-page">이전</a>
+    {% endif %}
+
+    <span class="current-page" style="font-weight: bold; margin: 0 10px;">
+        {{ reviews.number }} / {{ reviews.paginator.num_pages }}
+    </span>
+
+    {% if reviews.has_next %}
+        <a href="?page={{ reviews.next_page_number }}&q={{ query }}&search_type={{ search_type }}&filter={{ filter_type }}&sort={{ sort_type }}" class="btn-page">다음</a>
+        <a href="?page={{ reviews.paginator.num_pages }}&q={{ query }}&search_type={{ search_type }}&filter={{ filter_type }}&sort={{ sort_type }}" class="btn-page">»</a>
+    {% endif %}
+</div>
