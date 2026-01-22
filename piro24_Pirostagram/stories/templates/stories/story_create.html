@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}스토리 만들기{% endblock %}
+
+{% block content %}
+<h1>스토리 만들기</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <label for="id_title">제목:</label>
+    <input type="text" name="title" id="id_title" required><br><br>
+
+    <label for="id_content">내용:</label>
+    <textarea name="content" id="id_content" rows="4" required></textarea><br><br>
+
+    <label for="id_images">이미지 선택 (1개 이상):</label>
+    <input type="file" name="images" id="id_images" multiple required><br><br>
+
+    <button type="submit" class="btn-primary">스토리 업로드</button>
+</form>
+
+<style>
+form {
+    max-width: 500px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+input[type="text"], textarea, input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button.btn-primary {
+    background-color: #0095f6;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button.btn-primary:hover {
+    background-color: #007acc;
+}
+</style>
+{% endblock %}

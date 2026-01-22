@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}새 게시글 - Pirostagram{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box" style="max-width: 600px;">
+        <h2>새 게시글 작성</h2>
+        <form method="post" enctype="multipart/form-data" class="auth-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-primary">게시</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

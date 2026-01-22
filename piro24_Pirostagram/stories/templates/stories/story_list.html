@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}스토리 - Pirostagram{% endblock %}
+
+{% block content %}
+<div class="stories-container">
+    <div class="stories-header">
+        <h2>스토리</h2>
+        <a href="{% url 'stories:story_create' %}" class="btn-primary">새 스토리 만들기</a>
+    </div>
+
+    <div class="stories-grid">
+        {% for story in stories %}
+        <a href="{% url 'stories:story_detail' story.pk %}" class="story-card">
+            <div class="story-thumbnail">
+                {% if story.images.first %}
+                <img src="{{ story.images.first.image.url }}" alt="Story">
+                {% endif %}
+                <div class="story-overlay">
+                    <span>{{ story.images.count }}장</span>
+                </div>
+            </div>
+            <div class="story-info">
+                <strong>{{ story.author.username }}</strong>
+                <span>{{ story.created_at|timesince }} 전</span>
+            </div>
+        </a>
+        {% empty %}
+        <div class="empty-state">
+            <p>표시할 스토리가 없습니다.</p>
+            <a href="{% url 'stories:story_create' %}" class="btn-primary">첫 스토리 만들기</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* 컨테이너 */
+.stories-container {
+    max-width: 935px;
+    margin: 40px auto;
+    padding: 0 15px;
+}
+
+/* 헤더 */
+.stories-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+/* 그리드 */
+.stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 24px;
+}
+
+/* 카드 */
+.story-card {
+    text-decoration: none;
+    color: #262626;
+    background-color: #fff;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.story-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* 썸네일 */
+.story-thumbnail {
+    position: relative;
+    aspect-ratio: 9/16;
+    overflow: hidden;
+    background-color: #efefef;
+    min-height: 280px;
+}
+
+.story-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 이미지 위 overlay */
+.story-overlay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+}
+
+/* 정보 영역 */
+.story-info {
+    padding: 12px;
+}
+
+.story-info strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.story-info span {
+    font-size: 12px;
+    color: #8e8e8e;
+}
+
+/* 빈 상태 */
+.empty-state {
+    text-align: center;
+    padding: 40px 0;
+    border: 1px dashed #dbdbdb;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+/* 버튼 */
+.btn-primary {
+    display: inline-block;
+    background-color: #0095f6;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #007bb5;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .stories-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+}
+</style>
+{% endblock %}

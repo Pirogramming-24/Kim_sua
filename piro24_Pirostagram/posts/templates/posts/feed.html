@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block title %}홈 - Pirostagram{% endblock %}
+
+{% block content %}
+<div class="feed-container">
+
+    <!-- 포스트 섹션 -->
+    <div class="posts-list">
+        {% for post in posts %}
+        <div class="post-card">
+            <!-- 포스트 헤더 -->
+            <div class="post-header">
+                <a href="{% url 'accounts:profile' post.author.username %}" class="post-author">
+                    {% if post.author.profile_image %}
+                    <img src="{{ post.author.profile_image.url }}" alt="{{ post.author.username }}" class="avatar-small">
+                    {% else %}
+                    <div class="avatar-small default">{{ post.author.username.0|upper }}</div>
+                    {% endif %}
+                    <span>{{ post.author.username }}</span>
+                </a>
+
+                <!-- 팔로우 버튼 -->
+                {% if post.author != user %}
+                <button class="btn-follow" data-username="{{ post.author.username }}">
+                    {% if user in post.author.followers.all %}
+                    팔로잉
+                    {% else %}
+                    팔로우
+                    {% endif %}
+                </button>
+                {% endif %}
+
+                {% if post.author == user %}
+                <div class="post-actions">
+                    <a href="{% url 'posts:post_edit' post.pk %}">수정</a>
+                    <a href="{% url 'posts:post_delete' post.pk %}">삭제</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- 포스트 이미지 -->
+            {% if post.image %}
+            <div class="post-image">
+                <img src="{{ post.image.url }}" alt="Post image">
+            </div>
+            {% endif %}
+
+            <!-- 포스트 내용 + 좋아요 -->
+            <div class="post-content">
+                <div class="post-interactions">
+                    {% if user in post.likes.all %}
+                    <button class="btn-like liked" data-post-id="{{ post.pk }}" data-liked="true">
+                        ❤️ <span class="like-count">{{ post.likes.count }}</span>
+                    </button>
+                    {% else %}
+                    <button class="btn-like" data-post-id="{{ post.pk }}" data-liked="false">
+                        🤍 <span class="like-count">{{ post.likes.count }}</span>
+                    </button>
+                    {% endif %}
+                </div>
+
+                <p class="post-text">
+                    <strong>{{ post.author.username }}</strong> {{ post.content }}
+                </p>
+
+                <a href="{% url 'posts:post_detail' post.pk %}" class="view-comments">
+                    댓글 {{ post.comments.count }}개 보기
+                </a>
+
+                <p class="post-date">{{ post.created_at|timesince }} 전</p>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-feed">
+            <p>팔로우한 사용자의 게시물이 없습니다.</p>
+            <a href="{% url 'accounts:search' %}" class="btn-primary">친구 찾기</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 스토리 섹션 -->
+    <div class="stories-section">
+        <h2>스토리</h2>
+        <div class="stories-grid">
+            {% for story in stories %}
+            <a href="{% url 'stories:story_detail' story.pk %}" class="story-card">
+                <div class="story-thumbnail">
+                    {% if story.images.first %}
+                    <img src="{{ story.images.first.image.url }}" alt="Story">
+                    {% endif %}
+                    <div class="story-overlay">
+                        <span>{{ story.images.count }}장</span>
+                    </div>
+                </div>
+                <div class="story-info">
+                    <strong>{{ story.author.username }}</strong>
+                    <span>{{ story.created_at|timesince }} 전</span>
+                </div>
+            </a>
+            {% empty %}
+            <p>팔로우한 사용자의 스토리가 없습니다.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- 좋아요 토글 JS -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 좋아요 버튼
+    document.querySelectorAll('.btn-like').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const postId = this.dataset.postId;
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            try {
+                const res = await fetch(`/posts/${postId}/like/`, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrfToken }
+                });
+                const data = await res.json();
+
+                this.dataset.liked = data.liked;
+                this.querySelector('.like-count').textContent = data.likes_count;
+
+                if(data.liked){
+                    this.classList.add('liked');
+                    this.innerHTML = `❤️ <span class="like-count">${data.likes_count}</span>`;
+                } else {
+                    this.classList.remove('liked');
+                    this.innerHTML = `🤍 <span class="like-count">${data.likes_count}</span>`;
+                }
+            } catch (err) {
+                console.error(err);
+                alert('좋아요 처리 중 오류 발생');
+            }
+        });
+    });
+
+    // 팔로우 버튼
+    document.querySelectorAll('.btn-follow').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const username = this.dataset.username;
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            try {
+                const res = await fetch(`/accounts/follow/${username}/`, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrfToken }
+                });
+                const data = await res.json();
+
+                if(data.action === 'followed'){
+                    this.textContent = '팔로잉';
+                } else {
+                    this.textContent = '팔로우';
+                }
+            } catch(err) {
+                console.error(err);
+                alert('팔로우 처리 중 오류 발생');
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.btn-like.liked { color: red; }
+.btn-like { cursor: pointer; background: none; border: none; font-size: 1.2rem; }
+.btn-follow { cursor: pointer; padding: 4px 8px; border-radius: 4px; border: 1px solid #888; background: #fff; }
+.btn-follow:hover { background: #eee; }
+.posts-list, .stories-grid { display: flex; flex-wrap: wrap; gap: 16px; }
+.post-card, .story-card { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: #fff; }
+.post-header, .post-content { padding: 8px; }
+.avatar-small { width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; }
+.story-thumbnail { width: 120px; height: 200px; overflow: hidden; position: relative; }
+.story-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+.story-overlay { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.5); color: #fff; padding: 2px 6px; border-radius: 12px; font-size: 12px; }
+</style>
+{% endblock %}
