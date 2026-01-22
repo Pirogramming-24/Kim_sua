@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}감정 분석{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h2>😊 감정 분석</h2>
+    <p>영어 텍스트의 감정을 분석합니다 (긍정/부정)</p>
+
+    <form id="sentimentForm" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="textInput">분석할 영어 텍스트를 입력하세요:</label>
+            <textarea id="textInput" name="text" rows="4" placeholder="Enter English text..." required></textarea>
+        </div>
+        <button type="submit" id="submitBtn" class="btn">분석하기</button>
+        <div id="loadingMsg" class="messages info" style="display:none; margin-top:10px;">
+            ⏳ 처리 중입니다...
+        </div>
+    </form>
+
+    {% if error %}
+    <div class="messages error" style="margin-top:10px;">
+        오류: {{ error }}
+    </div>
+    {% endif %}
+
+    {% if history %}
+    <div class="history">
+        <h3>최근 분석 내역 (최대 5개)</h3>
+        {% for item in history %}
+        <div class="history-item">
+            <strong>입력:</strong> {{ item.input }}<br>
+            <strong>결과:</strong> {{ item.output }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('sentimentForm').addEventListener('submit', function() {
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('loadingMsg').style.display = 'block';
+});
+</script>
+{% endblock %}

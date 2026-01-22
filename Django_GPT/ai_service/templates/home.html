@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content">
+    <h2>AI 서비스에 오신 것을 환영합니다!</h2>
+    <p>상단 탭에서 원하는 기능을 선택하세요.</p>
+
+    {% if not user.is_authenticated %}
+    <div class="messages warning">
+        ⚠️ 비로그인 사용자는 감정 분석만 사용 가능합니다.<br>
+        모든 기능을 사용하려면 로그인해주세요!
+    </div>
+    <div style="margin-top: 15px;">
+        <a href="{% url 'signup' %}" class="btn">회원가입</a>
+        <a href="{% url 'login' %}" class="btn">로그인</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

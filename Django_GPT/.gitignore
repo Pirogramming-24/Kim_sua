@@ -1,0 +1,44 @@
+# Python 관련
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.manifest
+*.spec
+
+# 환경 변수
+.env
+.env.*
+
+# 가상환경
+venv/
+venv3/
+env/
+ENV/
+.venv/
+.env.bak/
+
+# Django 관련
+*.log
+*.pot
+*.pyc
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+node_modules/
+
+# IDE / 편집기 관련
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.iml
+
+# OS 관련
+.DS_Store
+Thumbs.db

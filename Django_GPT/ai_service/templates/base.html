@@ -1,0 +1,135 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI 서비스{% endblock %}</title>
+
+    <!-- 기본 CSS -->
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding:20px;
+        }
+        .container {
+            max-width:1200px;
+            margin:0 auto;
+            background:white;
+            border-radius:15px;
+            box-shadow:0 10px 40px rgba(0,0,0,0.2);
+            overflow:hidden;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color:white;
+            padding:20px 30px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        h1 { font-size:24px; }
+        .user-info { font-size:14px; }
+        .user-info a {
+            color:white;
+            text-decoration:none;
+            margin-left:10px;
+            padding:5px 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius:20px;
+            transition:0.3s;
+        }
+        .user-info a:hover { background: rgba(255,255,255,0.3); }
+        .tabs {
+            display:flex;
+            background:#f5f5f5;
+            border-bottom:2px solid #ddd;
+        }
+        .tab {
+            flex:1;
+            text-align:center;
+            padding:15px;
+            cursor:pointer;
+            text-decoration:none;
+            color:#333;
+            font-weight:500;
+            transition:0.3s;
+            border-bottom:3px solid transparent;
+        }
+        .tab:hover { background:#e0e0e0; }
+        .tab.active {
+            background:white;
+            border-bottom:3px solid #667eea;
+            color:#667eea;
+        }
+        .content { padding:30px; }
+        .messages {
+            padding:15px;
+            margin:20px 0;
+            border-radius:8px;
+        }
+        .messages.success { background:#d4edda; color:#155724; border:1px solid #28a745; }
+        .messages.error { background:#f8d7da; color:#721c24; border:1px solid #dc3545; }
+        .messages.warning { background:#fff3cd; color:#856404; border:1px solid #ffc107; }
+        .messages.info { background:#d1ecf1; color:#0c5460; border:1px solid #17a2b8; }
+    </style>
+
+    <!-- extra CSS 블록은 <style> 밖에서 -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header>
+            <h1>🤖 AI 서비스</h1>
+            <div class="user-info">
+                {% if user.is_authenticated %}
+                    환영합니다, {{ user.username }}님!
+                    <a href="{% url 'logout' %}">로그아웃</a>
+                {% else %}
+                    <a href="{% url 'login' %}">로그인</a>
+                    <a href="{% url 'signup' %}">회원가입</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- 탭 메뉴 -->
+        <nav class="tabs">
+            <a href="{% url 'sentiment' %}" class="tab {% if request.path == '/sentiment/' %}active{% endif %}">😊 감정 분석</a>
+            <a href="{% url 'summarize' %}" class="tab {% if request.path == '/summarize/' %}active{% endif %}">📝 텍스트 요약</a>
+            <a href="{% url 'translate' %}" class="tab {% if request.path == '/translate/' %}active{% endif %}">🌐 번역 (영→한)</a>
+        </nav>
+
+        <!-- 메시지 출력 -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="messages {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- 메인 콘텐츠 -->
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script>
+        function checkLogin(event, isAuthenticated, url) {
+            if (!isAuthenticated) {
+                event.preventDefault();
+                alert('로그인 후 이용해주세요');
+                window.location.href = '{% url "login" %}?next=' + url;
+                return false;
+            }
+            return true;
+        }
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

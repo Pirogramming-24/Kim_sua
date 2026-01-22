@@ -1,0 +1,57 @@
+# 나만의 AI 사이트 (Django)
+
+---
+## 사용 모델 (3개 이상)
+
+### 1. distilbert-base-uncased-finetuned-sst-2-english
+- **태스크**: Sentiment Analysis (감정 분석)
+- **입력 예시**
+I love you
+- **출력 예시**
+긍정적 (99.98%)
+- **실행 화면 예시**
+![alt text](<스크린샷 2026-01-23 022738.png>)
+---
+
+### 2. 요약 (Summarization)
+- **모델**: `facebook/bart-large-cnn`
+- **태스크**: 긴 글 요약
+- **입력 예시**
+Climate change is one of the most pressing issues of our time. Rising global temperatures, melting ice caps, and extreme weather events have significant impacts on ecosystems, agriculture, and human health. Governments and organizations worldwide are implementing strategies to reduce greenhouse gas emissions and promote sustainable practices. Public awareness and community action play a critical role in addressing this global challenge.
+- **출력 예시**
+Rising global temperatures, melting ice caps, and extreme weather events have significant impacts on ecosystems, agriculture, and human health. Governments and organizations worldwide are implementing strategies to reduce greenhouse gas emissions and promote sustainable practices. Public awareness and community action play a critical role in addressing this global challenge.
+- **실행 화면 예시**
+![alt text](<스크린샷 2026-01-23 022756.png>)
+---
+
+### 3. 번역 (Translation)
+- **모델**: `Helsinki-NLP/opus-mt-ko-en`
+- **태스크**: 한국어 → 영어 번역
+- **입력 예시**
+사랑해
+- **출력 예시**
+I love you.
+- **실행 화면 예시**
+![alt text](<스크린샷 2026-01-23 022806.png>)
+---
+## 로그인 제한(Access Control)
+
+- 비로그인 사용자는**1개 탭만 사용 가능**
+- 제한 탭 접근 시**“로그인 후 이용해주세요” alert 후 로그인 페이지로 이동**
+- 로그인 성공 시**원래 페이지로 복귀(next)**
+
+---
+## 구현 체크리스트
+
+- [O] 탭 3개 이상 + 각 탭 별 URL 분리
+- [O] 각 탭: 입력 → 실행 → 결과 출력
+- [O] 에러 처리: 모델 호출 실패 시 사용자에게 메시지 표시
+- [O] 로딩 표시(최소한 “처리 중…” 텍스트라도)
+- [O] 요청 히스토리 5개
+- [O]`.env` 사용 (토큰/API Key 노출 금지)
+- [O]`README.md`에 모델 정보/사용 예시/실행 방법 작성 후 GitHub push
+
+### 로그인 제한 체크
+- [O] 비로그인 사용자는 1개 탭만 접근 가능
+- [O] 제한 탭 접근 시 alert 후 로그인 페이지로 redirect
+- [O] 로그인 성공 시 원래 페이지로 복귀(next)
