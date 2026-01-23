@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}로그인 - Pirostagram{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <h1>Pirostagram</h1>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="사용자 이름" required>
+            <input type="password" name="password" placeholder="비밀번호" required>
+            <button type="submit" class="btn-primary">로그인</button>
+        </form>
+        <p class="auth-link">
+            계정이 없으신가요? <a href="{% url 'accounts:signup' %}">가입하기</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
